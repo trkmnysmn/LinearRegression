@@ -1,0 +1,93 @@
+# loading libraries
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import requests as rq
+from bs4 import BeautifulSoup as bs
+import re 
+
+# url
+url = "http://sukrubezen.com/kodluyoruz/work.php"
+headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36"
+
+# creating dataset over the website
+x_data = []
+y_data = []
+while True:
+
+    r = rq.get(url, headers=header)
+    soup = bs(r.text, "html.parser")
+    
+    if soup != None:
+        liste1 = soup.text #  <class 'bs4.BeautifulSoup'> halindeki veriyi <class 'str'> veri türüne dönüştürdüm.
+        temp = re.findall(r'\d+',liste1) # metin halindeki veriyi boşluklardan itibaren ayırıyorum.
+        integer_values = list(map(int, temp)) # Burada string olan değerleri integer hale dönüştürüyorum.
+        x = integer_values[0:128] # feature olarak kullanılacak veriyi oluşturuyorum. (x veri setini)
+        y = integer_values[128:] # sonuç olan y veri setini oluşturuyorum.
+
+        x_data.append(x)
+        y_data.append(y)
+    else:
+        print("Total dataset is created !")
+        break
+        
+print(len(y_data))
+print(len(x_data))
+print("x değerlerinin veri türü", type(x_data[1][1]))
+print("y değerlerinin veri türü", type(y_data[1][0]))
+
+# train test split
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.33, random_state=1)
+print(len(X_train))
+print(len(X_test))
+
+# model fitting
+LR = LinearRegression()
+LR.fit(X_train, y_train) 
+
+# regression coefficients 
+print('Coefficients: \n', LR.coef_) 
+coef = LR.coef_
+print("coeffiecnt type: ", type(coef))
+print("coefficient shape: ", coef.shape)
+print("coefficient length: ", len(coef[0,:]))
+
+# Coefficient değerleri 0 ve 1 aralığında olduğu için elde edilen değerler round fonksiyonu ile 0 ve 1 olarak yuvarlandı.
+for i in range(len(coef[0,:])):
+    coef[0,i] = np.absolute(round(coef[0,i]))
+     
+print(coef)
+print(len(coef[0,:]))
+
+# 128 adet coeffient değeri 8 li olacak şekilde ayrı ayrı listeler haline dönüştürüldü.
+liste = []
+for i in range(0,128,8):
+    a = coef[0,i:i+8] 
+    liste.append(a)
+ 
+# binary olarak değerleri 10 luk tabana çevirmek için stringe dönüştürmem gerekti. Burada 8 li olarak 0 ve 1 değerlerinden oluşan string oluşturuldu.
+liste2 = []
+for i in range(len(liste)):
+    c = str(liste[i][0])
+    for j in range(1,8): 
+        a = str(liste[i][j])
+        c =  c + a
+    liste2.append(c)
+print(liste2)
+print(len(liste2))
+
+# binary olarak verilen 8 bitlik değerler 10 luk tabana dönüştürüldü.
+ascii_values = []
+for i in range(len(liste2)):
+    value = int(liste2[i],2)
+    ascii_values.append(value)
+
+print(ascii_values)
+# bunun sonucunda [67, 111, 110, 103, 114, 97, 116, 117, 108, 97, 116, 105, 111, 110, 115, 33] değerleri elde edildi.
+
+# scii değerlerinin hangi sembole karşılık geldiği tespit edildi.
+''.join(chr(i) for i in ascii_values)
+
+# Bu işlemin sonucunda ekranda 'Congratulations!' yazısı çıkar.
