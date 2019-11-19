@@ -87,7 +87,7 @@ for i in range(len(liste2)):
 print(ascii_values)
 # bunun sonucunda [67, 111, 110, 103, 114, 97, 116, 117, 108, 97, 116, 105, 111, 110, 115, 33] değerleri elde edildi.
 
-# scii değerlerinin hangi sembole karşılık geldiği tespit edildi.
+# ascii değerlerinin hangi sembole karşılık geldiği tespit edildi.
 ''.join(chr(i) for i in ascii_values)
 
 # Bu işlemin sonucunda ekranda 'Congratulations!' yazısı çıkar.
