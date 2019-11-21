@@ -1,1 +1,2 @@
 # LinearRegression
+Linear Regression is one of the machine learning algorithms. It is used for classification problem. Main idea to linear regression is create a function for solving problem. There are some type of linear regression that are related to classification task and dataset. Degree of functions can be different, functions are used for creating line for classification.  Classification line must be linear function for linear regression. Therefore classification line should be determined carefully. Beacuse, we want to classify truthly each class.  
